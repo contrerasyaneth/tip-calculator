@@ -1,5 +1,5 @@
-import tipCalculator from "./tipcalculator";
-import totalFinal from "./TotalFinal";
+import tipCalculator from "./modules/tipcalculator.js";
+import totalFinal from "./modules/TotalFinal.js";
 
 // constantes de los elementos de HTML
 const main = document.getElementById("main");
@@ -31,9 +31,9 @@ form.addEventListener("submit", (e) => {
 
   //crear objeto constante con los valores de la forma
   const formulario = {
-    subTotalF: subtotal.value,
-    porcenTipF: porcenTip.value,
-    personasF: personas.value,
+    subTotalF: parseFloat(subtotal.value),
+    porcenTipF: parseFloat(porcenTip.value),
+    personasF: parseFloat(personas.value),
   };
 
   console.log(formulario);
