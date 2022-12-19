@@ -1,6 +1,6 @@
 import tipCalculator from './modules/tipCalculator.js';
 import totalFinal from './modules/TotalFinal.js';
-import updateTip from 'modules/updateTip.js';
+import updateTip from './modules/updateTip.js';
 import updateTotal from './modules/updateTotal.js';
 
 // constantes de los elementos de HTML
@@ -13,17 +13,14 @@ const totalResult = document.getElementById('result-total');
 // Custom box
 const customTip = document.getElementById('custom-tip');
 
-
 //guardar valores en variables
 const subtotal = document.getElementById('total-bill');
 const porcenDiv = document.getElementById('form-btns');
 const personas = document.getElementById('total-people');
 
-
 // Metodo para seleccionar todos los botones
 const btns = document.querySelectorAll('.form__box__container__btn');
 const resetBtn = document.getElementById('reset-btn');
-
 
 //variable para almacenar el valor porcentual selecionado
 let porcenTip;
@@ -31,16 +28,16 @@ let custom;
 
 //evento para escuchar a que boton le estamos dando click
 porcenDiv.addEventListener('click', (e) => {
-  for(let i = 0; i < btns.length; i++){
+  for (let i = 0; i < btns.length; i++) {
     btns[i].classList.remove('active');
   }
 
   porcenTip = e.target;
-  porcenTip.classList.add('active')
+  porcenTip.classList.add('active');
 
   //condicion para escuchar el custom
-  if (e.target.id === 'customtip') {
-    custom= e.target;
+  if (e.target.id === customTip) {
+    custom = e.target;
 
     custom.classList.remove('active');
   }
@@ -56,7 +53,7 @@ form.addEventListener('submit', (e) => {
     subTotalF: parseFloat(subtotal.value),
     porcenTipF: parseFloat(porcenTip.value),
     personasF: parseFloat(personas.value),
-  }
+  };
 
   const { subTotalF, porcenTipF, personasF } = formulario;
 
@@ -64,12 +61,10 @@ form.addEventListener('submit', (e) => {
 
   const totalF = totalFinal(subTotalF, personasF, tipFinal);
 
-
   // Llamar a las funciones que actualizan el DOM
   updateTip(tipFinal.toFixed(2), tipResult);
   updateTotal(totalF.toFixed(2), totalResult);
 });
-
 
 // Boton para reiniciar la tip calculator
 resetBtn.addEventListener('click', (e) => {
@@ -77,7 +72,7 @@ resetBtn.addEventListener('click', (e) => {
   customTip.value = '';
   personas.value = '';
 
-  for(let i = 0; i < btns.length; i++) {
+  for (let i = 0; i < btns.length; i++) {
     btns[i].classList.remove('active');
   }
 
