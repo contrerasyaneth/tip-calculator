@@ -210,5 +210,15 @@ body {
     margin-top: 2.75rem;
   }
 }
+/*
+  Clases de validacion
+*/
+.valid {
+  border: 1px solid hsl(172deg, 67%, 45%);
+}
+
+.invalid {
+  border: 1px solid red;
+}
 
 /*# sourceMappingURL=styles.css.map */

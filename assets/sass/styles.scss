@@ -253,3 +253,15 @@ body {
     }
   }
 }
+
+/*
+  Clases de validacion
+*/
+.valid {
+  border: 1px solid $btn-active;
+}
+
+.invalid {
+  border: 1px solid red;
+}
+

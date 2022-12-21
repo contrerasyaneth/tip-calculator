@@ -1,9 +1,9 @@
 import tipCalculator from './modules/tipCalculator.js';
-import totalFinal from './modules/TotalFinal.js';
+import totalFinal from './modules/totalFinal.js';
 import updateTip from './modules/updateTip.js';
 import updateTotal from './modules/updateTotal.js';
 
-// constantes de los elementos de HTML
+// Connstantes de los elementos de HTML
 const main = document.getElementById('main');
 const form = document.getElementById('main-form');
 
@@ -13,50 +13,86 @@ const totalResult = document.getElementById('result-total');
 // Custom box
 const customTip = document.getElementById('custom-tip');
 
-//guardar valores en variables
+// Guardar valores en variables
 const subtotal = document.getElementById('total-bill');
 const porcenDiv = document.getElementById('form-btns');
 const personas = document.getElementById('total-people');
 
 // Metodo para seleccionar todos los botones
-const btns = document.querySelectorAll('.form__box__container__btn');
+const btns = document.querySelectorAll('form__box__container__btn');
 const resetBtn = document.getElementById('reset-btn');
 
-//variable para almacenar el valor porcentual selecionado
-let porcenTip;
-let custom;
 
-//evento para escuchar a que boton le estamos dando click
+// Elemento para almacenar texto del invalid
+const invalid1 = document.getElementById('not-valid1');
+const invalid2 = document.getElementById('not-valid2');
+const invalid3 = document.getElementById('not-valid3');
+
+// Variable para almacenar el valor porcentual seleccionado
+let porcenTip;
+let checkCustom;
+let checkBtn = false;
+
+// Evento para escuchar a que boton le estamos dando click
 porcenDiv.addEventListener('click', (e) => {
   for (let i = 0; i < btns.length; i++) {
     btns[i].classList.remove('active');
   }
 
+  if (e.target.classList.contains('form__box__container__btn' )) {
+    checkBtn = true;
+  }
+
   porcenTip = e.target;
   porcenTip.classList.add('active');
 
-  //condicion para escuchar el custom
-  if (e.target.id === customTip) {
-    custom = e.target;
+  // Condicion para escuchar al custom
+  if (e.target === customTip) {
+    porcenTip = e.target;
 
-    custom.classList.remove('active');
+    checkCustom = true;
+
+    porcenTip.classList.remove('active');
   }
 });
 
-// crear un evento de submit para la forma
+// Crear un evento de submit para la forma
 form.addEventListener('submit', (e) => {
-  //evitar la action por defecto
+  // Evitar la action por defecto
   e.preventDefault();
 
-  //crear objeto constante con los valores de la forma
+
+  if(validateClick(checkBtn)) {
+  // Si le dieron click a custom, entonces dividamos su valor entre 10
+  if (checkCustom) {
+    porcenTip.value = porcenTip.value / 100;
+  }
+
+  // crear objecto constante con los valores de la forma
   const formulario = {
-    subTotalF: parseFloat(subtotal.value),
-    porcenTipF: parseFloat(porcenTip.value),
-    personasF: parseFloat(personas.value),
-  };
+    subtotalF:parseFloat(subtotal.value),
+    porcenTipF:parseFloat(porcenTip.value),
+    personasF:parseFloat(personas.value),
+  }
 
-  const { subTotalF, porcenTipF, personasF } = formulario;
+  const { subtotalF, porcenTipF, personasF } = formulario;
+  if (validateAll(subtotalF, personasF)) {
+    updateDOM(subtotalF, porcenTipF, personasF);
+    subtotal.parentElement.classList.add('valid');
+    personas.parentElement.classList.add('valid');
 
+    removeBorder(subtotal, 'valid');
+    removeBorder(personas, 'valid');
+  }
+}
+
+});
+
+
+
+
+// Funcion para actualizar el DOM
+function updateDOM(subTotalF, porcenTipF, personasF) {
   const tipFinal = tipCalculator(subTotalF, porcenTipF, personasF);
 
   const totalF = totalFinal(subTotalF, personasF, tipFinal);
@@ -64,13 +100,37 @@ form.addEventListener('submit', (e) => {
   // Llamar a las funciones que actualizan el DOM
   updateTip(tipFinal.toFixed(2), tipResult);
   updateTotal(totalF.toFixed(2), totalResult);
-});
+
+}
+
+
+// Funcion para quitar los mensajes en un periodo de tiempo
+function removeText(element) {
+  setTimeout(() => {
+    element.innerText = '';
+  }, 4000);
+}
+
+function removeBorder(element, classOfElement) {
+  setTimeout(() => {
+    element.parentElement.classList.remove(classOfElement);
+  }, 4000);
+}
 
 // Boton para reiniciar la tip calculator
 resetBtn.addEventListener('click', (e) => {
   subtotal.value = '';
   customTip.value = '';
   personas.value = '';
+
+
+  // Quitar validos
+  subtotal.parentElement.classList.remove('valid');
+  personas.parentElement.classList.remove('valid');
+
+  // Quitar invalidos
+  personas.parentElement.classList.remove('invalid');
+  subtotal.parentElement.classList.remove('invalid');
 
   for (let i = 0; i < btns.length; i++) {
     btns[i].classList.remove('active');
@@ -79,3 +139,57 @@ resetBtn.addEventListener('click', (e) => {
   tipResult.innerText = '$0.00';
   totalResult.innerText = '$0.00';
 });
+
+/*
+  Validacion de Forma
+*/
+function notZero(input) {
+  let check = true;
+
+  if (input <= 0) {
+    check = false;
+  }
+
+  return check;
+}
+
+function validateAll(subTotalF, personasF) {
+  let check = true;
+
+  // Validar que no sean ceros
+  if (!notZero(parseFloat(subTotalF))) {
+    check = false;
+
+    subtotal.parentElement.classList.add('invalid');
+    invalid1.innerText = 'No puede ser cero o menor que cero';
+
+    removeText(invalid1);
+    removeBorder(subtotal, 'invalid');
+  }
+
+  if (!notZero(parseFloat(personasF))) {
+    check = false;
+
+    personas.parentElement.classList.add('invalid');
+    invalid2.innerText = 'No puede ser cero o menor que cero';
+
+    removeText(invalid2);
+    removeBorder(personas, 'invalid');
+  }
+
+  return check;
+}
+
+function validateClick(checkBtn) {
+  let check = true;
+
+  if (!checkBtn) {
+    check = false;
+
+    invalid3.innerText = 'Tienes que darle click al menos a un boton';
+
+    removeText(invalid3);
+  }
+
+  return check;
+}
